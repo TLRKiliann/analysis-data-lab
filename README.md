@@ -46,15 +46,23 @@ A Scapy script that uses tcpdump to analyze sent and received ICMP packets.
 
 Run
 
-`sudo python3 icmp-lab.py`
+```
+Terminal 1
+
+sudo python3 icmp-lab.py
+```
 
 In another terminal, you can use these CMD with tcpdump
 
 ```
-request:
+Terminal 2
+
+# request
 sudo tcpdump -i en1 -c 1 -v -X 'icmp[icmptype] != icmp-echoreply'
 
-reply:
+# OR
+
+# reply
 sudo tcpdump -i en1 -c 1 -v -X 'icmp[icmptype] != icmp-echo'
 ```
 
