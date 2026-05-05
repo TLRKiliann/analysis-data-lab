@@ -56,12 +56,15 @@ sudo tcpdump -i en1 -c 1 -v -X 'icmp[icmptype] != icmp-echo'
 
 ## tcpdump CMD
 
-https://hackertarget.com/tcpdump-examples/
+[https://hackertarget.com/tcpdump-examples/](https://hackertarget.com/tcpdump-examples/)
 
 ```
-$ sudo tcpdump -i eth0 -nn -s0 -c 1 -v -X -G 5 port 80
+$ sudo tcpdump -i eth0 -nn -c 1 -v -X -G 5 port 80
+
+-i = interface
 
 -A = ASCII
+
 -X = hexadecimal & ASCII
 
 -c = nb de paquet
