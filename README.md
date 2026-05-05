@@ -14,11 +14,31 @@
 ## Installation
 
 ```
+# Clone the repository
+git clone https://github.com/TLRKiliann/analysis-data-lab.git
 
+# Go to the project folder
+cd analysis-data-lab
+
+# Create & activate virtual environment (lab for example)
+python3 -m venv lab
+
+source lab/bin/activate
+
+# Update all versions
+pip install -r requirements.txt
+
+# Selective update
+pip install --upgrade scapy
+
+pip freeze > requirements.txt
+
+# Or update to the latest compatible versions
+pip install --upgrade -r requirements.txt
 ```
 
-[ICMP-Lab](#icmp-lab)
-[tcpdump CMD](#tcpdump-cmd)
+- [ICMP-Lab](#icmp-lab)
+- [tcpdump CMD](#tcpdump-cmd)
 
 ## ICMP-Lab
 
