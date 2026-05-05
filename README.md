@@ -42,7 +42,11 @@ pip install --upgrade -r requirements.txt
 
 ## ICMP-Lab
 
-- icmp-lab.py => tcpdump CMD with Scapy
+A Scapy script that uses tcpdump to analyze sent and received ICMP packets.
+
+Run
+
+`sudo python3 icmp-lab.py`
 
 In another terminal, you can use these CMD with tcpdump
 
