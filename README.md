@@ -10,3 +10,48 @@
 [![Last Commit](https://img.shields.io/github/last-commit/TLRKiliann/analysis-data-lab)](https://github.com/TLRKiliann/analysis-data-lab)
 
 </div>
+
+## Installation
+
+```
+
+```
+
+[ICMP-Lab](#icmp-lab)
+[tcpdump CMD](#tcpdump-cmd)
+
+## ICMP-Lab
+
+- icmp-lab.py => tcpdump CMD with Scapy
+
+In another terminal, you can use these CMD with tcpdump
+
+```
+request:
+sudo tcpdump -i en1 -c 1 -v -X 'icmp[icmptype] != icmp-echoreply'
+
+reply:
+sudo tcpdump -i en1 -c 1 -v -X 'icmp[icmptype] != icmp-echo'
+```
+
+## tcpdump CMD
+
+https://hackertarget.com/tcpdump-examples/
+
+```
+$ sudo tcpdump -i eth0 -nn -s0 -c 1 -v -X -G 5 port 80
+
+-A = ASCII
+-X = hexadecimal & ASCII
+
+-c = nb de paquet
+
+-G = temps d'attente en sec 
+
+-nn = A single (n) will not resolve hostnames. A double (nn) will not resolve hostnames or ports. 
+This is handy for not only viewing the IP / port numbers but also when capturing a large amount 
+of data, as the name resolution will slow
+
+-v : Verbose, using (-v) or (-vv) increases the amount of detail shown in the output, often showing 
+more protocol specific information.
+```
