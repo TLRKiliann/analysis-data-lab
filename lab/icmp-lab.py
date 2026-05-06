@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from scapy.all import *
+from scapy import Ether, IP, ICMP, AsyncSniffer, sendp
 import time
 
 text = """
