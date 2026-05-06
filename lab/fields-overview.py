@@ -44,3 +44,11 @@ pkt_6.show()
 print("\n--- Ether + IP + TCP with show2() ---\n")
 
 pkt_6.show2()
+
+# View raw bytes
+print("\n=== RAW BYTES OCTETS ===")
+hexdump(pkt_4)
+
+# Extract the header only (first 20 bytes or octets)
+header_bytes = bytes(pkt_4)[:20]
+print(f"\nHeader IP (20 bytes or octets) : {header_bytes.hex(' ')}")
