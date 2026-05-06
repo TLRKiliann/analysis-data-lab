@@ -37,8 +37,21 @@ pip freeze > requirements.txt
 pip install --upgrade -r requirements.txt
 ```
 
+## Links
+
 - [ICMP-Lab](#icmp-lab)
 - [tcpdump CMD](#tcpdump-cmd)
+- [IP fields](#ip-fields)
+- [TCP fields](#tcp-fields)
+
+
+```
+# Swiftly: 0.0082 sec  ✅
+print("IP flag", pkt[IP].flags)
+
+# sprintf: 0.2350 sec  ❌ (~29x slower)
+print("This is IP src: ", pkt.sprintf("%IP.flags%"))
+```
 
 ## ICMP-Lab
 
@@ -89,4 +102,75 @@ of data, as the name resolution will slow
 
 -v : Verbose, using (-v) or (-vv) increases the amount of detail shown in the output, often showing 
 more protocol specific information.
+
+$ sudo tcpdump -i eth0 -n icmp -w capture.pcap
+
+-w = write
+
+capture.pcap = to capture packet
+```
+
+---
+
+## IP fields
+
+```
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|Version|  IHL  |Type of Service|          Total Length         | <- Champs
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Identification        |Flags|      Fragment Offset    | <- Champs
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Time to Live |    Protocol   |         Header Checksum       | <- Champs
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       Source Address                          | <- Champ src
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Destination Address                        | <- Champ dst
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Options (if any)    |    Padding           | <- Options
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+# ihl
+
+# tos
+
+# flags
+[Bit 0 (Reserved)] [Bit 1 (DF)] [Bit 2 (MF)]
+
+# 0x40 = 64 in decimal = bit DF
+0x40 = "DF" => flags=0x40 or flags="DF"
+
+# chksum
+
+```
+
+## TCP fields
+
+```
+# seq
+
+# ack
+
+# dataofs
+
+# reserved
+
+# flags
+SYN ACK FIN
+
+# window
+
+# chksum
+
+# urgptr
+
+# options
+```
+
+## SHOW() vs SHOW2()
+
+```
+show()	Les champs que vous avez définis	Au moment où vous construisez le paquet (valeurs "brutes" que vous avez mises)
+show2()	Les champs tels qu'ils seront réellement envoyés	Après que Scapy a calculé tous les champs automatiques (checksums, longueurs, etc.)
 ```
