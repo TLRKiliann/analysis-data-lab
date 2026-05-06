@@ -45,11 +45,14 @@ python3 any_file.py
 
 ## Links
 
+- [Installation](#installation)
 - [ICMP-Lab](#icmp-lab)
 - [tcpdump CMD](#tcpdump-cmd)
 - [IP fields](#ip-fields)
 - [TCP fields](#tcp-fields)
-
+- [Summary of IP and TCP](#summary-of-ip-and-tcp)
+- [show vs show2](#show-vs-show2)
+- [ans-and-unans](#ans-and-unans)
 
 ```
 # Swiftly: 0.0082 sec  ✅
@@ -116,11 +119,15 @@ $ sudo tcpdump -i eth0 -n icmp -w capture.pcap
 capture.pcap = to capture packet
 ```
 
+[:arrow_up: Up](#links)
+
 ---
 
 ## Calculate
 
 0x45, 0x00, 0x00, 0x3C = octets (bytes) en notation hexadécimale
+
+---
 
 ## IP fields
 
@@ -145,6 +152,7 @@ capture.pcap = to capture packet
 # ihl (Internet Header Length)
 ihl + options = 32 bits = 4 octets
 
+(look at file fields-overview.py)
 Minimale value : 5 (5 × 4 = 20 octets)      <= without options
 Maximale value : 15 (15 × 4 = 60 octets)    <= with all options
 
@@ -209,19 +217,6 @@ len > MTU (Maximum Transmission Unit)
 pkt = IP(len=10)  # Impossible (minimum 20 octets)
 
 
-
-
-en-tête IP ?
-
-A quoi correspond "donnees" dans cette exemple ?
-# Exemple
-ihl = 5      # 20 octets
-len = 1500   # 1500 octets
-donnees = 1480  # 1500 - 20
-
-
-
-
 # id (Identification)
 16 bits (0 to 65535)
 
@@ -249,20 +244,56 @@ Fragment Offset: 185 (1480 ÷ 8 = 185)
 Blocks of 8 octets => Offset max: 8191 => Position max: 65528 octets (8191 × 8)
 
 
-
 # ttl (time to live)
-8 bits
+8 bits (0-255)
 
-64 sauts
+Hops => 64 (Linux/macOS), 128 (Windows), 255 (routeurs)
 
-ttl=117 => 255-117 = 138 routers
+- ping -c 3 8.8.8.8
+ttl=117 => 128-117 = 11 hops (routers)
+(255-117 = 138 hops is not possible, max 128 or 64 routers)
 
-traceroute or ping -c 3 8.8.8.8
+- traceroute 8.8.8.8
+traceroute to 8.8.8.8 (8.8.8.8), 64 hops max, 40 byte packets
+ 1  localregion (x.x.x.x)  6.322 ms  4.278 ms  4.220 ms
+ 2  cybl-ch-zrh-pln-001.cyberlink.ch (212.55.222.27)  12.204 ms  12.610 ms  12.237 ms
+ 3  cybl-ch-zrh-pcr-002.cyberlink.ch (213.158.128.158)  13.197 ms  13.132 ms  12.579 ms
+ 4  cybl-ch-gtg-pbr-001.cyberlink.ch (213.158.128.138)  14.155 ms  16.632 ms  13.969 ms
+ 5  swissix.google.com (91.206.52.74)  13.876 ms  13.008 ms
+    cybl-ch-gtg-pbr-001.cyberlink.ch (213.158.128.138)  13.650 ms
+ 6  * * swissix.google.com (91.206.52.74)  15.580 ms
+ 7  * * *
+ 8  dns.google (8.8.8.8)  25.399 ms  14.157 ms  13.531 ms
+
+Your PC → Google : 8 hops (traceroute)
+Google → Your PC : 11 hops (ping)
+
+Routers take different paths on the outbound and return legs. This is very common on the Internet.
+
+255 remains the maximum possible value (since it is 8 bits), but it is rarely used on the public Internet.
+
 
 # proto (Protocol)
+8 bits
 
+The protocol field indicates which higher-level protocol is contained in the IP packet data:
+ICMP, TCP, UDP, ... (encapsulated protocol)
 
+Number (decimal)    Number (hexa)   Protocol        Usage
+--------------------------------------------------------------------------------------
+1                   0x01            ICMP            Ping, traceroute, erreurs réseau
+6                   0x06            TCP             Web (HTTP/HTTPS), Email, SSH, FTP
+17                  0x11            UDP	DNS,        streaming, VoIP, gaming
+2                   0x02            IGMP            Gestion des groupes multicast
+47                  0x2F            GRE             Tunnels VPN (PPTP)
+50                  0x32            ESP             IPSec (chiffrement)
+51                  0x33            AH              IPSec (authentification)
+89                  0x59            OSPF            Routage interne
+132                 0x84            SCTP            Téléphonie (alternative à TCP)
 
+- Proto=6  (TCP) + port 80  → HTTP
+- Proto=6  (TCP) + port 443 → HTTPS
+- Proto=17 (UDP) + port 53  → DNS
 
 # flags
 1 bit
@@ -277,7 +308,19 @@ If the header is corrupted, we don't know where to deliver the package!
 
 
 # options
+IP options are becoming obsolete because:
+
+1. They are ineffective
+2. They are dangerous (source routing)
+3. They are not supported by NAT
+4. IPv6 takes a different approach
+
+If you see IHL > 5, be cautious: it’s either a very specific case or it’s potentially suspicious!
 ```
+
+[:arrow_up: Up](#links)
+
+---
 
 ## TCP fields
 
@@ -336,15 +379,53 @@ Urgent Pointer
 # options
 ```
 
-## SHOW() vs SHOW2()
+[:arrow_up: Up](#links)
+
+---
+
+## Summary of IP and TCP
+
+```
+Summary
+
+Total length (len): 1500
+HEADER IP: 20 octets
+Data IP (TCP + HTTP): 1480 octets
+  - HEADER TCP: 20 octets
+  - Data HTTP: 1460 octets
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                        PAQUET IP (1500 octets)                      │
+├─────────────────────────────────────────────────────────────────────┤
+│ ┌─────────────────────────────────────────────────────────────────┐ │
+│ │                 HEADER IP (20 octets)                          │ │
+│ │  proto=6 (TCP)                                                  │ │
+│ └─────────────────────────────────────────────────────────────────┘ │
+│ ┌─────────────────────────────────────────────────────────────────┐ │
+│ │               DATA IP = SEGMENT TCP (1480 octets)            │ │
+│ │ ┌─────────────────────────────────────────────────────────────┐ │ │
+│ │ │         HEADER TCP (20-60 octets)                         │ │ │
+│ │ │  sport=12345, dport=80, flags, seq, ack, etc.              │ │ │
+│ │ └─────────────────────────────────────────────────────────────┘ │ │
+│ │ ┌─────────────────────────────────────────────────────────────┐ │ │
+│ │ │         DATA TCP = MESSAGE HTTP (1460 octets)           │ │ │
+│ │ │  "GET / HTTP/1.0\r\n\r\n"                                  │ │ │
+│ │ └─────────────────────────────────────────────────────────────┘ │ │
+│ └─────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## SHOW vs SHOW2
 
 ```
 show()  Au moment où vous construisez le paquet (valeurs "brutes" que vous avez mises)
 show2() Après que Scapy a calculé tous les champs automatiques (checksums, longueurs, etc.)
 ```
 
-## ANS & UNANS
+## ANS and UNANS
 
 ```
 ans,unans=srp(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst=sys.argv[1]), timeout=2)
 ```
+
+[:arrow_up: Up](#links)
