@@ -25,13 +25,20 @@ python3 -m venv lab
 
 source lab/bin/activate
 
+# Install scapy
+pip install scapy
+
+# Create requirements.txt
+touch requirements.txt
+
+# add scapy into requirements.txt
+pip freeze > requirements.txt
+
 # Update all versions
 pip install -r requirements.txt
 
 # Selective update
 pip install --upgrade scapy
-
-pip freeze > requirements.txt
 
 # Or update to the latest compatible versions
 pip install --upgrade -r requirements.txt
@@ -45,15 +52,17 @@ python3 any_file.py
 
 ## Links
 
-- [Installation](#installation)
-- [ICMP-Lab](#icmp-lab)
-- [tcpdump CMD](#tcpdump-cmd)
-- [calculate](#calculate)
-- [IP fields](#ip-fields)
-- [TCP fields](#tcp-fields)
-- [Summary of IP and TCP](#summary-of-ip-and-tcp)
-- [show vs show2](#show-vs-show2)
-- [ans-and-unans](#ans-and-unans)
+- [⚡ analysis-data-lab](#-analysis-data-lab)
+  - [Installation](#installation)
+  - [Links](#links)
+  - [ICMP-Lab](#icmp-lab)
+  - [tcpdump CMD](#tcpdump-cmd)
+  - [Calculate](#calculate)
+  - [IP fields](#ip-fields)
+  - [TCP fields](#tcp-fields)
+  - [Summary of IP and TCP](#summary-of-ip-and-tcp)
+  - [SHOW vs SHOW2](#show-vs-show2)
+  - [ANS and UNANS](#ans-and-unans)
 
 ```
 # Swiftly: 0.0082 sec  ✅
