@@ -41,8 +41,4 @@ if len(sniffer.results) > 1:
 else:
     print("❌ Pas de réponse")
 
-'''
-sudo tcpdump 'tcp[tcpflags] & (tcp-syn|tcp-fin) != 0
-sudo tcpdump -i en0 -n host 8.8.8.8
-sudo tcpdump -i en0 -n icmp -w capture.pcap
-'''
+print("end !")
