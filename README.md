@@ -35,6 +35,12 @@ pip freeze > requirements.txt
 
 # Or update to the latest compatible versions
 pip install --upgrade -r requirements.txt
+
+# Enter to the lab folder
+cd lab
+
+# Run
+python3 any_file.py
 ```
 
 ## Links
