@@ -48,6 +48,7 @@ python3 any_file.py
 - [Installation](#installation)
 - [ICMP-Lab](#icmp-lab)
 - [tcpdump CMD](#tcpdump-cmd)
+- [calculate](#calculate)
 - [IP fields](#ip-fields)
 - [TCP fields](#tcp-fields)
 - [Summary of IP and TCP](#summary-of-ip-and-tcp)
@@ -125,7 +126,44 @@ capture.pcap = to capture packet
 
 ## Calculate
 
-0x45, 0x00, 0x00, 0x3C = octets (bytes) en notation hexadécimale
+```
+0000  45 00 00 28 00 01 00 00 40 06 7C CD 7F 00 00 01
+...
+
+Position 0-1 : 45 00
+Position 2-3 : 00 28
+Position 4-5 : 00 01
+Position 6-7 : 00 00
+Position 8-9 : 40 06
+Position 10-11: 7C CD
+Position 12-15: 7F 00 00 01
+Position 16-19: 7F 00 00 01
+Position 20... : data (TCP)
+
+Octets      Valeur hexa                 Champ                       Description
+-------------------------------------------------------------------------------------------------------
+0               0x45                Version + IHL               Version=4, IHL=5 (20 octets)
+1               0x00                TOS/DSCP+ECN                Type of Service = 0
+2-3             0x00 0x28           Total Length                40 octets (0x0028 = 40)
+4-5             0x00 0x01           Identification	            0x0001 = 1
+6-7             0x00 0x00           Flags + Fragment Offset	    Pas de fragmentation
+8               0x40                TTL	64                      (0x40 = 64)
+9               0x06                Protocol                    6 = TCP
+10-11           0x7C 0xCD           Header Checksum             0x7CCD (valide)
+12-15           0x7F 0x00 0x00 0x01	Source IP                   127.0.0.1 (localhost)
+16-19           0x7F 0x00 0x00 0x01	Destination IP              127.0.0.1 (localhost)
+20-23           0x00 0x00 0x00 0x00	Début données TCP           (À analyser)
+```
+
+hexadécimal = 16
+
+16 (hexadécimal)	0x40	(4 × 16) + (0 × 1)	64
+
+0x40 = 64 
+Seize en hexadécimal = 0x10 => 1x16
+
+16	Hexadécimal	0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F (16 chiffres)	0x42
+2	Binaire	0,1 (2 chiffres)	101010
 
 ---
 
