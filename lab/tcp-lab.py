@@ -2,6 +2,25 @@
 
 from scapy.all import *
 
+text_start = """
+***************
+*             *
+*** START ! ***
+*             *
+***************
+"""
+print(text_start)
+
+text_intro = '''
+####### ####### ####### ####### ####### ####### ####### #######
+tcpdump CMD
+sudo tcpdump -i en1 -v 'tcp[tcpflags] & (tcp-syn|tcp-fin) != 0
+sudo tcpdump -i en1 -n host 54.198.84.224
+sudo tcpdump -i en1 -n icmp -w capture.pcap
+####### ####### ####### ####### ####### ####### ####### #######
+'''
+print(text_intro)
+
 tcp_text = """
 #################
 TCP Segment build 
@@ -9,9 +28,32 @@ TCP Segment build
 """
 print(tcp_text)
 
-pkt = Ether()/IP()/TCP(dport=80)
+fake_mac = "de:ad:be:ef:ca:fe"
+fake_ip = "192.168.40.10"
+
+pkt = Ether(src=fake_mac)/IP(src=fake_ip, dst="54.198.84.224", flags=2)/TCP(sport=443, dport=80, seq=0, ack=0, flags="A", window=8192)
 print(pkt.summary())
-print(pkt.sprintf("%Ether.src% > %IP.src%"))
+print("This is IP src: ", pkt.sprintf("%IP.flags%"))
+
+print("IP flag", pkt[IP].flags)
+print("TCP flag", pkt[TCP].flags) 
+
+pkt.show()
+
+print("\n---\n")
+
+pkt.show2()
+
+
+        # seq       = 0
+        # ack       = 0
+        # dataofs   = None
+        # reserved  = 0
+        # flags     = S
+        # window    = 8192
+        # chksum    = None
+        # urgptr    = 0
+        # options   = []
 
 print("\n---\n")
 
@@ -50,9 +92,7 @@ print(tcp_comb)
 
 pkt_comb = Ether()/IP(dst="54.198.84.224")/TCP(dport=80)
 
-donnees = b"GET / HTTP/1.1\r\nHost: google.com\r\n\r\n"
-pkt_comb_complet = pkt_comb / donnees
+data = b"GET / HTTP/1.1\r\nHost: google.com\r\n\r\n"
+complete_combo = pkt_comb / data
 
-sendp(pkt_comb_complet, iface="en1")
-
-print("\n---")
+sendp(complete_combo, iface="en1")
