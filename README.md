@@ -112,6 +112,10 @@ capture.pcap = to capture packet
 
 ---
 
+## Calculate
+
+0x45, 0x00, 0x00, 0x3C = octets (bytes) en notation hexadécimale
+
 ## IP fields
 
 ```
@@ -131,9 +135,60 @@ capture.pcap = to capture packet
 |                    Options (if any)    |    Padding           | <- Options
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-# ihl
+# ihl (Internet Header Length)
 
-# tos
+ihl + options = 32 bits = 4 octets
+
+Minimale value : 5 (5 × 4 = 20 octets)      <= without options
+Maximale value : 15 (15 × 4 = 60 octets)    <= with all options
+
+---
+
+ihl = 5  # 20 octets
+data_start = ihl * 4  # 20 octets since the beginning
+
+ihl = 8  # 32 octets (header + options)
+data_start = ihl * 4  # 32 octets since the beginning
+
+# tos (Type of Service)
+
+8 bits (1 octet)
+
+DSCP (Differentiated Services Code Point) : bits 0-5 (6 bits)
+
+ECN (Explicit Congestion Notification) : bits 6-7 (2 bits)
+
+DSCP (decimal)      DSCP (binaire)      Nom	                            Usage typique
+-------------------------------------------------------------------------------------------------------
+0                   000000          Best Effort (BE)	            Trafic normal (par défaut)
+8                   001000          Class Selector 1 (CS1)          Trafic "à moindre coût" (scavenger)
+16                  010000	        Class Selector 2 (CS2)          Trafic de fond
+24                  011000	        Class Selector 3 (CS3)          Appels téléphoniques
+32                  100000	        Class Selector 4 (CS4)          Vidéoconférence
+40                  101000	        Class Selector 5 (CS5)          Voice signaling
+46                  101110          Expedited Forwarding (EF)       Voix (priorité maximale)
+48                  110000	        Class Selector 6 (CS6)          Routage réseau (OSPF, BGP)
+56                  111000	        Class Selector 7 (CS7)          Critical (réseau interne)
+
+ex: <IP(dst="8.8.8.8" tos=0xB8)> # 184 in décimal = DSCP 46 (EF) with 6 bits
+
+ECN value           Binaire             Signification
+----------------------------------------------------------------------
+0                   00          Non-ECT (ECN not capable) - par défaut
+1                   01          ECT(1) (ECN Capable Transport)
+2                   10          ECT(0) (ECN Capable Transport)
+3                   11          CE (Congestion Experienced)
+
+- Paquet capable ECN (ECT(0))
+pkt = IP(dst="8.8.8.8", tos=128)  # ECN=10, DSCP=0
+
+- Paquet avec notification de congestion
+pkt = IP(dst="8.8.8.8", tos=192)  # ECN=11, DSCP=0
+
+- Scapy - DSCP marking
+voip = IP(tos=0xB8, dst="sip.server.com") / UDP(...)  # DSCP 46 = EF
+video = IP(tos=0x88, dst="zoom.us") / UDP(...)        # DSCP 34 = AF41
+backup = IP(tos=0x20, dst="backup.server") / TCP(...)  # DSCP 8 = CS1
 
 # flags
 [Bit 0 (Reserved)] [Bit 1 (DF)] [Bit 2 (MF)]
@@ -142,6 +197,9 @@ capture.pcap = to capture packet
 0x40 = "DF" => flags=0x40 or flags="DF"
 
 # chksum
+
+IP	En-tête seulement	Si l'en-tête est corrompu, on ne sait pas où livrer le paquet !
+TCP/UDP	En-tête + données	Vérification complète de bout en bout
 
 ```
 
@@ -174,7 +232,10 @@ Sequence number
 # ack
 Acknowledgment Number
 
-# dataofs
+# dataofs (Data Offset)
+
+Minimale value : 5 (5 × 4 = 20 octets)      <= without options
+Maximale value : 15 (15 × 4 = 60 octets)    <= with all options
 
 # reserved
 
@@ -191,6 +252,7 @@ SYN, ACK, FIN, RST, PSH, URG
 # window
 
 # chksum
+TCP/UDP	En-tête + données	Vérification complète de bout en bout
 
 # urgptr
 Urgent Pointer
@@ -201,6 +263,12 @@ Urgent Pointer
 ## SHOW() vs SHOW2()
 
 ```
-show()	Les champs que vous avez définis	Au moment où vous construisez le paquet (valeurs "brutes" que vous avez mises)
-show2()	Les champs tels qu'ils seront réellement envoyés	Après que Scapy a calculé tous les champs automatiques (checksums, longueurs, etc.)
+show()  Au moment où vous construisez le paquet (valeurs "brutes" que vous avez mises)
+show2() Après que Scapy a calculé tous les champs automatiques (checksums, longueurs, etc.)
+```
+
+## ANS & UNANS
+
+```
+ans,unans=srp(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst=sys.argv[1]), timeout=2)
 ```
