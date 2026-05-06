@@ -136,8 +136,7 @@ capture.pcap = to capture packet
 ## Calculate
 
 ```
-0000  45 00 00 28 00 01 00 00 40 06 7C CD 7F 00 00 01
-...
+0000  45 00 00 28 00 01 00 00 40 06 7C CD 7F 00 00 01 7F 00 00 01
 
 Position 0-1 : 45 00
 Position 2-3 : 00 28
@@ -148,6 +147,35 @@ Position 10-11: 7C CD
 Position 12-15: 7F 00 00 01
 Position 16-19: 7F 00 00 01
 Position 20... : data (TCP)
+
+Adresse relative 0 : [45 00 00 28]  ← Mot 0
+Adresse relative 4 : [00 01 00 00]  ← Mot 1
+Adresse relative 8 : [40 06 7C CD]  ← Mot 2
+Adresse relative 12: [7F 00 00 01]  ← Mot 3
+Adresse relative 16: [7F 00 00 01]  ← Mot 4
+TCP...
+
+Corresponding with HEADER of IP
+
+# Mot 0 (0x1000-0x1003) : 45 00 00 28
+0x45 = premier octet (version + IHL)
+0x00 = TOS
+0x00 0x28 = Total Length (40 octets)
+
+# Mot 1 (0x1004-0x1007) : 00 01 00 00
+0x00 0x01 = Identification (1)
+0x00 0x00 = Flags + Fragment Offset
+
+# Mot 2 (0x1008-0x100B) : 40 06 7C CD
+0x40 = TTL (64)
+0x06 = Protocol (TCP)
+0x7C 0xCD = Header Checksum
+
+# Mot 3 (0x100C-0x100F) : 7F 00 00 01
+7F 00 00 01 = Source IP (127.0.0.1)
+
+# Mot 4 (0x1010-0x1013) : 7F 00 00 01
+7F 00 00 01 = Destination IP (127.0.0.1)
 
 Octets      Valeur hexa                 Champ                       Description
 -------------------------------------------------------------------------------------------------------
@@ -178,10 +206,39 @@ hexadécimal = 16
 0x45 = ??
 ihl => 0x45 = (4x16) + 5 = 69 octets ❌ False
 
-version = 4
-ihl = 5
-4 x 5 = 20 octets ✅
+Version = 0x04
+ihl = 0x05
+4 octets x 5 mots = 20 octets ✅
+
+:warning: 1 mots = 32 bits = 4 octets :warning:
+
+ihl = 4 octets x 5 mots = 20 octets
+32 bits x 5 mots = 160 bits
+
+Octet complet : 0x45 = 0b01000101
+                └─┘ └─┘
+                4   5
+                │   └── IHL = 5
+                └────── Version = 4
+
+Champs obligatoires (20 octets) :
+┌─────────────────────────────────────────────────────────────┐
+│ - Version + IHL (1 octet)                                   │
+│ - TOS (1 octet)                                             │
+│ - Total Length (2 octets)                                   │
+│ - Identification (2 octets)                                 │
+│ - Flags + Fragment Offset (2 octets)                        │
+│ - TTL (1 octet)                                             │
+│ - Protocol (1 octet)                                        │
+│ - Header Checksum (2 octets)                                │
+│ - Source IP (4 octets)                                      │
+│ - Destination IP (4 octets)                                 │
+├─────────────────────────────────────────────────────────────┤
+│ Total = 20 octets = 5 mots de 4 octets                      │
+└─────────────────────────────────────────────────────────────┘
 ```
+
+[:arrow_up: Up](#links)
 
 ---
 
@@ -207,14 +264,16 @@ ihl = 5
 
 # ihl (Internet Header Length)
 ihl + options = 32 bits = 4 octets
+IHL = 5 → 5 mots × 4 octets/mot = 20 octets
 
 (look at file fields-overview.py)
-Minimale value : 5 (5 × 4 = 20 octets)      <= without options
-Maximale value : 15 (15 × 4 = 60 octets)    <= with all options
+Minimale value : 5 (5 mots × 4 octets = 20 octets)    <= without options
+Maximale value : 15 (15 mots × 4 octets = 60 octets)  <= with all options
 
 ---
 
-ihl = 5  # 20 octets
+:anger: ihl = 5 mots of 4 octets or 32 bits => 20 octets or 160 bits
+
 data_start = ihl * 4  # 20 octets since the beginning
 
 ihl = 8  # 32 octets (header + options)
@@ -371,7 +430,7 @@ IP options are becoming obsolete because:
 3. They are not supported by NAT
 4. IPv6 takes a different approach
 
-If you see IHL > 5, be cautious: it’s either a very specific case or it’s potentially suspicious!
+:warning: If you see IHL > 5, be cautious: it’s either a very specific case or it’s potentially suspicious! :warning:
 ```
 
 [:arrow_up: Up](#links)
