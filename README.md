@@ -153,17 +153,26 @@ Octets      Valeur hexa                 Champ                       Description
 12-15           0x7F 0x00 0x00 0x01	Source IP                   127.0.0.1 (localhost)
 16-19           0x7F 0x00 0x00 0x01	Destination IP              127.0.0.1 (localhost)
 20-23           0x00 0x00 0x00 0x00	Début données TCP           (À analyser)
-```
-
-hexadécimal = 16
-
-16 (hexadécimal)	0x40	(4 × 16) + (0 × 1)	64
-
-0x40 = 64 
-Seize en hexadécimal = 0x10 => 1x16
 
 16	Hexadécimal	0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F (16 chiffres)	0x42
 2	Binaire	0,1 (2 chiffres)	101010
+hexadécimal = 16
+
+16 (hexadécimal) => 0x10 + 1x16 = 16
+
+0x40 = 64
+0x40 => (4x16) + (0x16) = 64 octets
+
+0x28 = 40
+0x28 = (2 x 16) + 8 = 40 octets
+
+0x45 = ??
+ihl => 0x45 = (4x16) + 5 = 69 octets ❌ False
+
+version = 4
+ihl = 5
+4 x 5 = 20 octets ✅
+```
 
 ---
 
