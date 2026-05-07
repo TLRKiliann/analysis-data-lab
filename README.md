@@ -403,6 +403,8 @@ Number (decimal)    Number (hexa)   Protocol        Usage
 47                  0x2F            GRE             Tunnels VPN (PPTP)
 50                  0x32            ESP             IPSec (chiffrement)
 51                  0x33            AH              IPSec (authentification)
+80                                                  HTTP
+443                                                 HTTPS
 89                  0x59            OSPF            Routage interne
 132                 0x84            SCTP            Téléphonie (alternative à TCP)
 
