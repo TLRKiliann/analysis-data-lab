@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from scapy import IP, TCP
+from scapy.all import *
+# from scapy import IP, TCP
 
 text_intro="""
 ====================================

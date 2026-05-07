@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from scapy import Ether, ARP, IP, TCP, ICMP, hexdump
+from scapy.all import *
+# from scapy import Ether, ARP, IP, TCP, ICMP, hexdump
 
 text_intro = '''
 ####### ####### ####### ####### ######
