@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from scapy import Ether, IP, TCP, send, sendp
+from scapy.all import *
 
 text_start = """
 ***************
@@ -43,17 +43,6 @@ pkt.show()
 print("\n---\n")
 
 pkt.show2()
-
-
-        # seq       = 0
-        # ack       = 0
-        # dataofs   = None
-        # reserved  = 0
-        # flags     = S
-        # window    = 8192
-        # chksum    = None
-        # urgptr    = 0
-        # options   = []
 
 print("\n---\n")
 

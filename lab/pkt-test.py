@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from scapy.all import *
-# from scapy import IP, TCP
 
 text_intro="""
 ====================================
@@ -10,9 +9,9 @@ text_intro="""
 """
 print(text_intro)
 
-fake_ip = "192.177.32.4"
+fake_ip = "192.168.18.4"
 
-pkt = IP(ttl=64, proto=6, src=fake_ip, dst="192.177.32.22")/TCP(dataofs=5 ,flags="S", sport=443, dport=80)
+pkt = IP(ttl=64, proto=6, src=fake_ip, dst="192.168.18.1")/TCP(dataofs=5 ,flags="S", dport=80)
 
 ip_src = pkt[IP].src
 print("ip src =", ip_src)
