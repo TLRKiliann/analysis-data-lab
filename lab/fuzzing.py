@@ -3,6 +3,7 @@
 from scapy.all import *
 import sys
 
+# Linux
 # sudo ./bin/python3 specials_filters.py
 
 width = 90
@@ -16,7 +17,7 @@ print()
 print('#' * width)
 
 # ICMP
-# ans, unans = sr1(IP(dst="192.168.18.1-10", proto=(1))/ICMP()/"SCAPY", retry=0, timeout=3, inter=0.5)
+# pkt = sr1(IP(dst="192.168.18.1-10", proto=(1))/ICMP()/"SCAPY", retry=0, timeout=3, inter=0.5)
 
 start_text = "This may take a while..."
 print(start_text)
