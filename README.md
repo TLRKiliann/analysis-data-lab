@@ -62,7 +62,7 @@ python3 any_file.py
   - [TCP fields](#tcp-fields)
   - [Summary of IP and TCP](#summary-of-ip-and-tcp)
   - [SHOW vs SHOW2](#show-vs-show2)
-  - [ANS and UNANS](#ans-and-unans)
+  - [sr sr1 srp srp1 send sendp](#sr-sr1-srp-srp1-send-sendp)
 
 ```
 # Swiftly: 0.0082 sec  ✅
@@ -535,14 +535,30 @@ Data IP (TCP + HTTP): 1480 octets
 ## SHOW vs SHOW2
 
 ```
-show()  Au moment où vous construisez le paquet (valeurs "brutes" que vous avez mises)
-show2() Après que Scapy a calculé tous les champs automatiques (checksums, longueurs, etc.)
+pkt.show()  Au moment où vous construisez le paquet (valeurs "brutes" que vous avez mises)
+
+pktshow2() Après que Scapy a calculé tous les champs automatiques (checksums, longueurs, etc.)
+
+pkt.summary()
 ```
 
-## ANS and UNANS
+## sr sr1 srp srp1 send sendp
 
 ```
-ans,unans=srp(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst=sys.argv[1]), timeout=2)
+ans, unans = srp(Ether()/IP()/TCP())
+
+reponse = srp1(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst="192.168.18.1"), timeout=2)
+
+if reponse:
+    print(f"MAC de 192.168.18.1 : {reponse[ARP].hwsrc}")
+
+sendp(Ether()/ARP())
+
+ans,unans = sr(IP()/TCP())
+
+pkt = sr1(IP()/TCP())
+
+send(IP(dst="192.168.18.22")/TCP(dport=80, flags="R"))
 ```
 
 [:arrow_up: Up](#links)
