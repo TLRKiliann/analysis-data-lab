@@ -29,7 +29,7 @@ try:
         for sent, received in ans:
                 print(f"Response received from : {received[IP].src}")
         
-                # not recommanded
+                # received.show() is not recommanded
                 received.summary()
 
                 # Champs IP critiques pour le fuzzing
