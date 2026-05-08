@@ -46,6 +46,10 @@ pkt.show2()
 
 print("\n---\n")
 
+pkt.summary()
+
+print("\n---\n")
+
 tcp_data_txt = """
 ############################################################
 TCP packet with data with send to httpbin.org (IP - layer 3)
