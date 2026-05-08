@@ -478,12 +478,23 @@ Maximale value : 15 (15 × 4 = 60 octets)    <= with all options
 # flags
 SYN, ACK, FIN, RST, PSH, URG
 
-0x20 = "URG"
-0x10 = "ACK"
-0x08 = "PSH"
-0x04 = "RST"
-0x02 = "SYN"
-0x01 = "FIN"
+Hexa	Binaire     Flags	      Nom commun
+----------------------------------------
+0x00	00000000	  (aucun)	-
+0x01	00000001	  FIN         F
+0x02	00000010	  SYN         S
+0x04	00000100	  RST         R
+0x08	00001000	  PSH         P
+0x10	00010000	  ACK         A
+0x20	00100000	  URG         U
+0x12	00010010	  SYN+ACK	    SA (ou S/A)
+0x14	00010100	  RST+ACK     RA
+0x18	00011000	  PSH+ACK     PA
+0x11	00010001	  FIN+ACK     FA
+0x13	00010011	  FIN+SYN+ACK	(rare)
+0x03	00000011	  FIN+SYN	    (très rare)
+0x30	00110000	  URG+ACK	    UA
+0x39	00111001	  URG+PSH+FIN	(rare)
 
 # window
 
