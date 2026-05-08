@@ -45,9 +45,16 @@ try:
         print(f" |- Checksum: {received[TCP].chksum}")
         print(f" |- Urgent Pointer: {received[TCP].urgptr}")
 
+
+    print("\n[+] Filtered/Blocked ports (no response):")
+    for sent in unans:
+        print(f"    Port {sent[TCP].dport}: FILTERED (timeout)")
+
+    print(f"\n✅ Analysis completed: {len(ans)} responses, {len(unans)} unanswered")
+
+
 except Exception as e:
     print(f"An error occured => {e}")
     sys.exit(1)
 
-print(f"\n✅ Analysis completed: {len(ans)} responses, {len(unans)} unanswered")
 sys.exit(0)
