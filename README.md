@@ -61,6 +61,7 @@ python3 any_file.py
   - [IP fields](#ip-fields)
   - [TCP fields](#tcp-fields)
   - [Summary of IP and TCP](#summary-of-ip-and-tcp)
+  - [ARP](#arp)
   - [SHOW vs SHOW2](#show-vs-show2)
   - [sr sr1 srp srp1 send sendp](#sr-sr1-srp-srp1-send-sendp)
 
@@ -542,6 +543,44 @@ Data IP (TCP + HTTP): 1480 octets
 │ └─────────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────────┘
 ```
+
+
+[:arrow_up: Up](#links)
+
+## ARP
+
+```
+ARP(
+    hwtype=1,           # Hardware type (1 = Ethernet)
+    ptype=0x0800,       # Protocol type (0x0800 = IPv4)
+    hwlen=6,            # Hardware address length (6 octets pour MAC)
+    plen=4,             # Protocol address length (4 octets pour IPv4)
+    op=1,               # Opération (1 = who-has/request, 2 = is-at/reply)
+    hwsrc=MAC_source,   # Adresse MAC source
+    psrc=IP_source,     # Adresse IP source
+    hwdst=MAC_dest,     # Adresse MAC destination
+    pdst=IP_dest        # Adresse IP destination
+)
+```
+
+ARP Fields
+
+```
+Champ   Type    Description                 Valeurs typiques
+-------------------------------------------------------------------------------------------------------
+hwtype  int	    Type de matériel            1 = Ethernet, 6 = IEEE 802, 15 = Frame Relay
+ptype   int	    Type de protocole           0x0800 = IPv4, 0x0806 = ARP, 0x86DD = IPv6
+hwlen   int	    Longueur adresse hardware   6 (pour Ethernet MAC)
+plen    int	    Longueur adresse protocole  4 (pour IPv4)
+op      int	    Opération ARP               1 = requête, 2 = réponse, 3 = RARP request, 4 = RARP reply
+hwsrc   str     MAC source                  "aa:bb:cc:dd:ee:ff"
+psrc    str     IP source                   "192.168.1.10"
+hwdst   str     MAC destination             "ff:ff:ff:ff:ff:ff" (broadcast pour requête)
+pdst    str     IP destination              "192.168.1.1"
+```
+
+
+[:arrow_up: Up](#links)
 
 ## SHOW vs SHOW2
 
