@@ -31,7 +31,9 @@ print(tcp_text)
 fake_mac = "de:ad:be:ef:ca:fe"
 fake_ip = "192.168.40.10"
 
-pkt = Ether(src=fake_mac)/IP(src=fake_ip, dst="54.198.84.224", flags=2)/TCP(sport=443, dport=80, seq=0, ack=0, flags="A", window=8192)
+pkt = Ether(src=fake_mac)/IP(src=fake_ip, dst="54.198.84.224", flags=2)/TCP(sport=443, dport=80, 
+    seq=0, ack=0, flags="A", window=8192)
+
 print(pkt.summary())
 print("This is IP src: ", pkt.sprintf("%IP.flags%"))
 

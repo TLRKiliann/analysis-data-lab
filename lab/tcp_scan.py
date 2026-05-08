@@ -15,7 +15,8 @@ print()
 print(width * "#")
 
 try:
-    ans, unans = sr(IP(dst="192.168.18.1")/TCP(dport=[22,80,443], flags="S"), timeout=3, inter=0.5, retry=0)
+    ans, unans = sr(IP(dst="192.168.18.1")/TCP(dport=[22,80,443], flags="S"), 
+        timeout=3, inter=0.5, retry=0)
 
     for sent, received in ans:
         if received.haslayer(IP):
