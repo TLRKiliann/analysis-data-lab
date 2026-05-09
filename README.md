@@ -50,11 +50,10 @@ cd lab
 python3 any_file.py
 ```
 
-## Links
+**Links**
 
 - [⚡ analysis-data-lab](#-analysis-data-lab)
   - [Installation](#installation)
-  - [Links](#links)
   - [ICMP-Lab](#icmp-lab)
   - [tcpdump CMD](#tcpdump-cmd)
   - [Calculate](#calculate)
@@ -62,17 +61,9 @@ python3 any_file.py
   - [TCP fields](#tcp-fields)
   - [Summary of IP and TCP](#summary-of-ip-and-tcp)
   - [ARP](#arp)
-  - [SHOW vs SHOW2](#show-vs-show2)
+  - [show show2 vs summary](#show-show2-vs-summary)
   - [sr sr1 srp srp1 send sendp](#sr-sr1-srp-srp1-send-sendp)
   - [ICMP](#icmp)
-
-```
-# Swiftly: 0.0082 sec  ✅
-print("IP flag", pkt[IP].flags)
-
-# sprintf: 0.2350 sec  ❌ (~29x slower)
-print("This is IP src: ", pkt.sprintf("%IP.flags%"))
-```
 
 ## ICMP-Lab
 
@@ -617,7 +608,7 @@ pdst    str     IP destination              "192.168.1.1"
 
 [:arrow_up: Up](#links)
 
-## SHOW vs SHOW2
+## show show2 vs summary
 
 ```
 pkt.show()  Au moment où vous construisez le paquet (valeurs "brutes" que vous avez mises)
@@ -625,6 +616,31 @@ pkt.show()  Au moment où vous construisez le paquet (valeurs "brutes" que vous 
 pktshow2() Après que Scapy a calculé tous les champs automatiques (checksums, longueurs, etc.)
 
 pkt.summary()
+```
+
+**Display results**
+
+```
+# Swiftly: 0.0082 sec  ✅
+print("IP flag", pkt[IP].flags)
+
+# sprintf: 0.2350 sec  ❌ (~29x slower)
+print("This is IP src: ", pkt.sprintf("%IP.flags%"))
+```
+
+```
+==================================
+BENCHMARK OF SCAPY DISPLAY METHODS
+==================================
+
+📊 pkt.show():       8.4521 sec for 1000 calls  (slow - detailed view)
+📊 pkt.show2():      9.1234 sec for 1000 calls  (very slow - recalculate all)
+📊 pkt.summary():    3.2456 sec for 1000 calls  (medium - brief summary)
+
+⚡ Direct access:    0.0082 sec for 1000 calls  (very fast ✅)
+📝 print() f-string: 0.0085 sec for 1000 calls  (very fast ✅)
+
+🐌 pkt.sprintf():    0.2350 sec for 1000 calls  (very slow - 29x slower ❌)
 ```
 
 ## sr sr1 srp srp1 send sendp
