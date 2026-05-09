@@ -64,6 +64,7 @@ python3 any_file.py
   - [ARP](#arp)
   - [SHOW vs SHOW2](#show-vs-show2)
   - [sr sr1 srp srp1 send sendp](#sr-sr1-srp-srp1-send-sendp)
+  - [ICMP](#icmp)
 
 ```
 # Swiftly: 0.0082 sec  ✅
@@ -210,9 +211,11 @@ ihl => 0x45 = (4x16) + 5 = 69 octets ❌ False
 Version = 0x04
 ihl = 0x05
 4 octets x 5 mots = 20 octets ✅
+```
 
 :warning: 1 mots = 32 bits = 4 octets :warning:
 
+```
 ihl = 4 octets x 5 mots = 20 octets
 32 bits x 5 mots = 160 bits
 
@@ -261,8 +264,11 @@ Champs obligatoires (20 octets) :
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                    Options (if any)    |    Padding           | <- Options
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
 
+**ihl**
 
+```
 # ihl (Internet Header Length)
 ihl + options = 32 bits = 4 octets
 IHL = 5 → 5 mots × 4 octets/mot = 20 octets
@@ -270,17 +276,20 @@ IHL = 5 → 5 mots × 4 octets/mot = 20 octets
 (look at file fields-overview.py)
 Minimale value : 5 (5 mots × 4 octets = 20 octets)    <= without options
 Maximale value : 15 (15 mots × 4 octets = 60 octets)  <= with all options
-
----
+```
 
 :anger: ihl = 5 mots of 4 octets or 32 bits => 20 octets or 160 bits
 
+```
 data_start = ihl * 4  # 20 octets since the beginning
 
 ihl = 8  # 32 octets (header + options)
 data_start = ihl * 4  # 32 octets since the beginning
+```
 
+**tos**
 
+```
 # tos (Type of Service)
 8 bits (1 octet)
 
@@ -319,8 +328,11 @@ pkt = IP(dst="8.8.8.8", tos=192)  # ECN=11, DSCP=0
 voip = IP(tos=0xB8, dst="sip.server.com") / UDP(...)  # DSCP 46 = EF
 video = IP(tos=0x88, dst="zoom.us") / UDP(...)        # DSCP 34 = AF41
 backup = IP(tos=0x20, dst="backup.server") / TCP(...)  # DSCP 8 = CS1
+```
 
+**len**
 
+```
 # len (Total Length)
 16 bits (0-65535) but minimum 20 octets
 
@@ -331,16 +343,22 @@ Knowing where the package ends
 len > MTU (Maximum Transmission Unit)
 
 pkt = IP(len=10)  # Impossible (minimum 20 octets)
+```
 
+**id**
 
+```
 # id (Identification)
 16 bits (0 to 65535)
 
 The “Identification” field (ID) is used to group fragments from the same packet. When a packet is fragmented, all of its fragments are assigned the same identification number.
 
 - Security issues => Idle scan, ID prediction, fragmentation attacks
+```
 
+**frag**
 
+```
 # frag (Fragment Offset)
 13 bits 
 8 octets x 8 = 64 bits
@@ -358,8 +376,11 @@ Fragment Offset: 185 (1480 ÷ 8 = 185)
 ...
 
 Blocks of 8 octets => Offset max: 8191 => Position max: 65528 octets (8191 × 8)
+```
 
+**ttl**
 
+```
 # ttl (time to live)
 8 bits (0-255)
 
@@ -387,8 +408,11 @@ Google → Your PC : 11 hops (ping)
 Routers take different paths on the outbound and return legs. This is very common on the Internet.
 
 255 remains the maximum possible value (since it is 8 bits), but it is rarely used on the public Internet.
+```
 
+**proto**
 
+```
 # proto (Protocol)
 8 bits
 
@@ -412,19 +436,29 @@ Number (decimal)    Number (hexa)   Protocol        Usage
 - Proto=6  (TCP) + port 80  → HTTP
 - Proto=6  (TCP) + port 443 → HTTPS
 - Proto=17 (UDP) + port 53  → DNS
+```
 
+**flags**
+
+```
 # flags
 1 bit
 [Bit 0 (Reserved)] [Bit 1 (DF)] [Bit 2 (MF)]
 
 # 0x40 = 64 in decimal = bit DF
 0x40 = "DF" => flags=0x40 or flags="DF"
+```
 
+**chksum**
 
+```
 # chksum
 If the header is corrupted, we don't know where to deliver the package!
+```
 
+**options**
 
+```
 # options
 IP options are becoming obsolete because:
 
@@ -432,9 +466,10 @@ IP options are becoming obsolete because:
 2. They are dangerous (source routing)
 3. They are not supported by NAT
 4. IPv6 takes a different approach
+```
 
 :warning: If you see IHL > 5, be cautious: it’s either a very specific case or it’s potentially suspicious! :warning:
-```
+
 
 [:arrow_up: Up](#links)
 
@@ -549,6 +584,8 @@ Data IP (TCP + HTTP): 1480 octets
 
 ## ARP
 
+**ARP Fields**
+
 ```
 ARP(
     hwtype=1,           # Hardware type (1 = Ethernet)
@@ -562,8 +599,6 @@ ARP(
     pdst=IP_dest        # Adresse IP destination
 )
 ```
-
-ARP Fields
 
 ```
 Champ   Type    Description                 Valeurs typiques
@@ -594,21 +629,198 @@ pkt.summary()
 
 ## sr sr1 srp srp1 send sendp
 
-```
-ans, unans = srp(Ether()/IP()/TCP())
+**send sendp without response**
 
+```
+# without wainting on response
+sendp(Ether()/ARP()/IP())
+
+send(IP(dst="192.168.18.22")/TCP(dport=80, flags="R"))
+```
+
+**sr sr1**
+
+```
+# with srp1
 reponse = srp1(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst="192.168.18.1"), timeout=2)
 
 if reponse:
     print(f"MAC de 192.168.18.1 : {reponse[ARP].hwsrc}")
 
-sendp(Ether()/ARP())
-
-ans,unans = sr(IP()/TCP())
-
+# with sr1
 pkt = sr1(IP()/TCP())
-
-send(IP(dst="192.168.18.22")/TCP(dport=80, flags="R"))
 ```
+
+**ans unans with srp sr**
+
+```
+# with srp
+ans, unans = srp(Ether()/IP()/TCP())
+
+# with sr
+ans,unans = sr(IP()/TCP())
+```
+
+```
+Fonction  Layers              Send              Wait response ?         Use
+-------------------------------------------------------------------------------------------
+send()    Layer 3 (IP)        Packets IP        ❌ No                   IP()/ICMP()
+sendp()   Layer 2 (Ethernet)  Trames Ethernet   ❌ No                   Ether()/IP()/ICMP()
+sr()      Layer 3 (IP)        Packets IP        ✅ Yes (several)        IP()/ICMP()
+sr1()     Layer 3 (IP)        Packets IP        ✅ Yes (only one)       IP()/ICMP()
+srp()     Layer 2 (Ethernet)  Trames Ethernet   ✅ Yes (several)        Ether()/IP()/ICMP()
+srp1()    Layer 2 (Ethernet)  Trames Ethernet   ✅ Yes (only one)       Ether()/IP()/ICMP()
+```
+
+[:arrow_up: Up](#links)
+
+## ICMP
+
+**ICMP Type**
+
+```
+Type      Nom                           Description
+0         Echo Reply                    Réponse à un ping (réponse à une requête echo)
+3         Destination Unreachable       Destination inaccessible
+4         Source Quench                 Contrôle de flux (obsolète)
+5         Redirect                      Redirection de route
+8         Echo Request                  Requête ping (demande d'écho)
+9         Router Advertisement          Annonce de routeur
+10        Router Solicitation           Demande de routeur
+11        Time Exceeded                 TTL expiré (traceroute)
+12        Parameter Problem             Problème sur l'en-tête IP
+13        Timestamp Request             Demande d'horodatage
+14        Timestamp Reply               Réponse d'horodatage
+15        Information Request           Demande d'info (obsolète)
+16        Information Reply             Réponse d'info (obsolète)
+17        Address Mask Request          Demande de masque de sous-réseau
+18        Address Mask Reply            Réponse de masque de sous-réseau
+```
+
+**ICMP 8 octets + payload**
+
+```
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Type      |     Code      |          Checksum             | <- Header ICMP
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|<-- 8 bits -->|<-- 8 bits -->|<---------- 16 bits ------------>|
+|                                                               |
+|                         Message Body                          |
+|                   (depend on Type and Code)                   |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+**Pour Echo Request (Type 8) et Echo Reply (Type 0)**
+
+```
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Type      |     Code      |          Checksum             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Identifier            |        Sequence Number        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+|                             Data                              |
+|                         (Variable length)                     |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+**Pour Destination Unreachable (Type 3)**
+
+```
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Type=3    |     Code      |          Checksum             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|      Unused (must be 0)       |          MTU (if Code=4)      |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+|                    IP Header + 8 bytes of                     |
+|                   original datagram's payload                 |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+**Champs pour Destination Unreachable**
+
+```
+Fields              Bits        Description
+----------------------------------------------------------------------------
+Type                8 bits      3 (Destination Unreachable)
+Code                8 bits      0=Network, 1=Host, 3=Port, etc.
+Checksum            16 bits     Somme de contrôle
+Unused              16 bits     Reserved (doit être 0)
+MTU                 16 bits     Next-hop MTU (uniquement si Code=4)
+Original Datagram   Variable	  En-tête IP + 8 octets du datagramme original
+```
+
+**Pour Time Exceeded (Type 11)**
+
+- Code 0 = TTL expiré (traceroute)
+- Code 1 = Fragment reassembly time exceeded
+
+```
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Type=11   |     Code      |          Checksum             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                           Unused                              |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+|                    IP Header + 8 bytes of                     |
+|                   original datagram's payload                 |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+**Pour Redirect (Type 5)**
+
+```
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|     Type=5    |     Code      |          Checksum             |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                      Gateway IP Address                       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+|                    IP Header + 8 bytes of                     |
+|                   original datagram's payload                 |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
+
+**ICMP with Scapy**
+
+```
+# Structure d'un paquet ICMP dans Scapy
+from scapy.all import *
+
+# Echo Request (ping)
+pkt = ICMP()
+pkt.type = 8      # Echo Request
+pkt.code = 0      # Toujours 0 pour Echo
+pkt.chksum = 0    # Auto-calculé par Scapy
+pkt.id = 12345    # Identifier
+pkt.seq = 1       # Sequence number
+
+# Ou plus simplement :
+pkt = ICMP(type=8, code=0, id=12345, seq=1)
+
+# Ajouter du payload
+pkt = ICMP(type=8, code=0, id=12345, seq=1)
+pkt = pkt / b"Hello World"
+
+# Afficher les champs
+pkt.show()
+```
+
 
 [:arrow_up: Up](#links)
