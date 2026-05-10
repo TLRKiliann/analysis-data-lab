@@ -147,7 +147,7 @@ Adresse relative 4 : [00 01 00 00]  ← Mot 1
 Adresse relative 8 : [40 06 7C CD]  ← Mot 2
 Adresse relative 12: [7F 00 00 01]  ← Mot 3
 Adresse relative 16: [7F 00 00 01]  ← Mot 4
-TCP...
+TCP start here...
 
 Corresponding with HEADER of IP
 
@@ -332,14 +332,14 @@ backup = IP(tos=0x20, dst="backup.server") / TCP(...)  # DSCP 8 = CS1
 # len (Total Length)
 16 bits (0-65535) but minimum 20 octets
 
-! Force it manually (not recommended) !
-
 Knowing where the package ends
 
 len > MTU (Maximum Transmission Unit)
 
 pkt = IP(len=10)  # Impossible (minimum 20 octets)
 ```
+
+:warning: Force it manually (not recommended) :warning:
 
 **id**
 
@@ -449,7 +449,18 @@ Number (decimal)    Number (hexa)   Protocol        Usage
 
 ```
 # chksum
+16 bits
+
+The IP checksum uses a 16-bit one's-complement sum, applied only to the IP header (typically 20 bytes without options, or more if options are present).
+
 If the header is corrupted, we don't know where to deliver the package!
+
+Each router checks this, since the TTL changes and the DST verify this too.
+
+0xFFFF => ok Otherwise, it's corrupted
+
+IPv6 haven't got checksum !
+
 ```
 
 **options**
@@ -493,20 +504,52 @@ IP options are becoming obsolete because:
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                             Data                              |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```
 
+**seq**
+
+```
 # seq
 Sequence number
+```
 
+**ack**
+
+```
 # ack
 Acknowledgment Number
+```
 
+**dataofs**
+
+```
 # dataofs (Data Offset)
 
 Minimale value : 5 (5 × 4 = 20 octets)      <= without options
 Maximale value : 15 (15 × 4 = 60 octets)    <= with all options
 
-# reserved
+Data Offset = 5 → 5 × 32 bits = 20 octets → pas d'options, en-tête fixe seulement. Les données commencent immédiatement après.
 
+Data Offset = 8 → 8 × 32 bits = 32 octets → 12 octets d'options (car 20 octets d'en-tête fixe + 12 octets d'options). Les données commencent après ces 32 octets.
+```
+
+**reserved**
+
+```
+# reserved
+4 bits
+
+always equal to 0
+
+Bits      Nom         Usage
+Bits      4-7         Reserved	Doit être 0 (non utilisé)
+Bit       8           ECE	ECN-Echo (RFC 3168)
+Bit       9           CWR	Congestion Window Reduced (RFC 3168)
+```
+
+**flags**
+
+```
 # flags
 SYN, ACK, FIN, RST, PSH, URG
 
@@ -524,18 +567,67 @@ Hexa	Binaire     Flags	      Nom commun
 0x18	00011000	  PSH+ACK     PA
 0x11	00010001	  FIN+ACK     FA
 0x13	00010011	  FIN+SYN+ACK (rare)
-0x03	00000011	  FIN+SYN     (très rare)
+0x03	00000011	  FIN+SYN     (very rare)
 0x30	00110000	  URG+ACK     UA
 0x39	00111001	  URG+PSH+FIN (rare)
+```
 
+**window**
+
+```
 # window
+16 bts (0 à 65 535 octets)
 
+This value can be increased up to 1 GB (scaling factor defined during the 3-way handshake).
+
+- advertised window = checked by dst, field of header TCP.
+
+- congestion window or cwnd = checked by src, never transmitted.
+
+Why is the window dynamic ?
+
+The receiver adjusts the window based on:
+    The size of its buffer (available memory)
+    Its data processing speed
+    The remaining memory in its TCP socket
+
+If the receiver is overwhelmed, it may announce Window = 0 → the sender must stop completely.
+
+What happens when Window = 0 ?
+    The transmitter stops sending data
+    It periodically sends "Zero Window Probe" segments (often a single data packet)
+    When the receiver has emptied its buffer, it sends an ACK with Window > 0
+    The transmitter resumes sending
+
+The congestion window (cwnd) is independent and managed by the sender. It is used to prevent the network itself from becoming overloaded.
+```
+
+**chksum**
+
+```
 # chksum
-Header + data => Comprehensive end-to-end verification
+16 bits
 
+TCP header + data => Comprehensive end-to-end verification
+
+Feature                     IP Checksum (IPv4)	                  TCP Checksum (IPv6)
+What it covers              IP header only                        TCP header + data + IP pseudo-header
+Protects the data?          ❌ No                                 ✅ Yes
+Recalculated at each hop    ✅ Yes (because TTL changes)          ❌ No (only at sender and receiver)
+In IPv6                     Does not exist                        Still exists
+Mandatory                   Yes (IPv4)                            Yes
+```
+
+**urgptr**
+
+```
 # urgptr
 Urgent Pointer
+```
 
+**options**
+
+```
 # options
 ```
 
