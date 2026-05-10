@@ -11,6 +11,19 @@
 
 </div>
 
+- [⚡ analysis-data-lab](#-analysis-data-lab)
+  - [Installation](#installation)
+  - [ICMP-Lab](#icmp-lab)
+  - [tcpdump CMD](#tcpdump-cmd)
+  - [Calculate](#calculate)
+  - [IP fields](#ip-fields)
+  - [TCP fields](#tcp-fields)
+  - [Summary of IP and TCP](#summary-of-ip-and-tcp)
+  - [ARP](#arp)
+  - [Display results](#display-results)
+  - [sr sr1 srp srp1 send sendp](#sr-sr1-srp-srp1-send-sendp)
+  - [ICMP](#icmp)
+
 ## Installation
 
 ```
@@ -50,20 +63,8 @@ cd lab
 python3 any_file.py
 ```
 
-**Links**
 
-- [⚡ analysis-data-lab](#-analysis-data-lab)
-  - [Installation](#installation)
-  - [ICMP-Lab](#icmp-lab)
-  - [tcpdump CMD](#tcpdump-cmd)
-  - [Calculate](#calculate)
-  - [IP fields](#ip-fields)
-  - [TCP fields](#tcp-fields)
-  - [Summary of IP and TCP](#summary-of-ip-and-tcp)
-  - [ARP](#arp)
-  - [Display results](#display-results)
-  - [sr sr1 srp srp1 send sendp](#sr-sr1-srp-srp1-send-sendp)
-  - [ICMP](#icmp)
+[:arrow_up: Up](#-analysis-data-lab)
 
 ## ICMP-Lab
 
@@ -90,6 +91,8 @@ sudo tcpdump -i en1 -c 1 -v -X 'icmp[icmptype] != icmp-echoreply'
 # reply
 sudo tcpdump -i en1 -c 1 -v -X 'icmp[icmptype] != icmp-echo'
 ```
+
+[:arrow_up: Up](#-analysis-data-lab)
 
 ## tcpdump CMD
 
@@ -122,9 +125,7 @@ $ sudo tcpdump -i eth0 -n icmp -w capture.pcap
 capture.pcap = to capture packet
 ```
 
-[:arrow_up: Up](#links)
-
----
+[:arrow_up: Up](#-analysis-data-lab)
 
 ## Calculate
 
@@ -233,7 +234,7 @@ Champs obligatoires (20 octets) :
 └─────────────────────────────────────────────────────────────┘
 ```
 
-[:arrow_up: Up](#links)
+[:arrow_up: Up](#-analysis-data-lab)
 
 ---
 
@@ -462,7 +463,7 @@ IP options are becoming obsolete because:
 :warning: If you see IHL > 5, be cautious: it’s either a very specific case or it’s potentially suspicious! :warning:
 
 
-[:arrow_up: Up](#links)
+[:arrow_up: Up](#-analysis-data-lab)
 
 ---
 
@@ -507,21 +508,21 @@ SYN, ACK, FIN, RST, PSH, URG
 
 Hexa	Binaire     Flags	      Nom commun
 ----------------------------------------
-0x00	00000000	  (aucun)	-
+0x00	00000000	  (none)      -
 0x01	00000001	  FIN         F
 0x02	00000010	  SYN         S
 0x04	00000100	  RST         R
 0x08	00001000	  PSH         P
 0x10	00010000	  ACK         A
 0x20	00100000	  URG         U
-0x12	00010010	  SYN+ACK	    SA (ou S/A)
+0x12	00010010	  SYN+ACK     SA (ou S/A)
 0x14	00010100	  RST+ACK     RA
 0x18	00011000	  PSH+ACK     PA
 0x11	00010001	  FIN+ACK     FA
-0x13	00010011	  FIN+SYN+ACK	(rare)
-0x03	00000011	  FIN+SYN	    (très rare)
-0x30	00110000	  URG+ACK	    UA
-0x39	00111001	  URG+PSH+FIN	(rare)
+0x13	00010011	  FIN+SYN+ACK (rare)
+0x03	00000011	  FIN+SYN     (très rare)
+0x30	00110000	  URG+ACK     UA
+0x39	00111001	  URG+PSH+FIN (rare)
 
 # window
 
@@ -534,7 +535,7 @@ Urgent Pointer
 # options
 ```
 
-[:arrow_up: Up](#links)
+[:arrow_up: Up](#-analysis-data-lab)
 
 ---
 
@@ -571,7 +572,7 @@ Data IP (TCP + HTTP): 1480 octets
 ```
 
 
-[:arrow_up: Up](#links)
+[:arrow_up: Up](#-analysis-data-lab)
 
 ## ARP
 
@@ -606,7 +607,7 @@ pdst    str     IP destination              "192.168.1.1"
 ```
 
 
-[:arrow_up: Up](#links)
+[:arrow_up: Up](#-analysis-data-lab)
 
 ## Display results
 
@@ -691,7 +692,7 @@ srp1()    Layer 2 (Ethernet)  Trames Ethernet   ✅ Yes (only one)       Ether()
 ```
 
 
-[:arrow_up: Up](#links)
+[:arrow_up: Up](#-analysis-data-lab)
 
 ## ICMP
 
