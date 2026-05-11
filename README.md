@@ -511,6 +511,10 @@ IP options are becoming obsolete because:
 ```
 # sport (source port)
 16 bits → valeurs de 0 à 65535
+
+The source port identifies the sending application on the client machine. It is the local "socket" number that allows the operating system to determine which application the connection belongs to on the sending side.
+
+The operating system assigns a different source port for each outgoing connection.
 ```
 
 **dport**
@@ -690,8 +694,14 @@ Mandatory                   Yes (IPv4)                            Yes
 **urgptr**
 
 ```
-# urgptr
-Urgent Pointer
+# urgptr (Urgent Pointer)
+Always equal to 0
+
+Historical use cases:
+Telnet: Send Ctrl+C or Ctrl+Z to interrupt a long command
+FTP: Cancel a transfer in progress
+Rlogin: Emergency signal
+Metaphor: Like a medical emergency that jumps the queue
 ```
 
 **options**
