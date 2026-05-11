@@ -262,6 +262,15 @@ Champs obligatoires (20 octets) :
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
+**Version**
+
+```
+# Version
+4 bits
+
+IPv4 or IPv6
+```
+
 **ihl**
 
 ```
@@ -708,6 +717,19 @@ Metaphor: Like a medical emergency that jumps the queue
 
 ```
 # options
+
+Normally, the TCP header is 20 bytes long (without options). The "Data Offset" field indicates the total size (a multiple of 4 bytes). If you see 32 bytes, that means there are 12 bytes of options.
+
+TCP options allow adding advanced features:
+
+Option                          Number      Purpose
+-------------------------------------------------------------------------------------------------------------------------
+MSS (Maximum Segment Size)      2           Negotiate the maximum segment size (avoids fragmentation)
+Window Scale                    3           Expand the TCP window beyond 64 KB (essential for high-bandwidth connections)
+Timestamps                      8           Measure RTT (Round-Trip Time) and prevent duplicate segments (PAWS)
+SACK (Selective ACK)            4           Acknowledge non-consecutive segments (better loss recovery)
+NOP (No-Operation)              1           Memory alignment (padding)
+EOL (End of List)               0           Marks the end of the options
 ```
 
 [:arrow_up: Up](#-analysis-data-lab)
