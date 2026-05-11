@@ -506,18 +506,87 @@ IP options are becoming obsolete because:
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
+**sport**
+
+```
+# sport (source port)
+16 bits → valeurs de 0 à 65535
+```
+
+**dport**
+
+```
+# dport (destination port)
+16 bits → valeurs de 0 à 65535
+
+Ports 0–1023 are typically server-side destination ports
+22 => SSH
+25 => SMTP
+53 => DNS
+80 => HTTP
+443 => HTTPS
+```
+
 **seq**
 
 ```
-# seq
-Sequence number
+# seq (Sequence number)
+32 bits
+Number of FIRST byte (octet).
+
+Without it, TCP would not be reliable !
+
+The sequence number (SEQ) is a unique number assigned to each byte of data sent. It allows TCP to:
+- Reorder packets that arrive out of sequence.
+- Detect missing packets (gaps in the sequence).
+- Ignore duplicates (the same SEQ received twice).
+
+The SEQ field does not number the packets (TCP segment). It numbers each byte of the payload.
+
+If a segment carries 100 bytes (octets) of data and its SEQ = 1000, then these bytes (octets) occupy sequence numbers 1000, 1001, ..., 1099.
+The next segment will start at SEQ = 1100 (unless there are intentional gaps).
+
+For security reasons (to prevent prediction), TCP selects a random initial sequence number (ISN) when establishing the connection (SYN).
+
+SEQ = the number of the FIRST data byte in this segment.
+ACK = the number of the NEXT byte expected by the receiver.
 ```
 
 **ack**
 
 ```
-# ack
-Acknowledgment Number
+# ack (Acknowledgment Number)
+
+Machine B send ACK = The last byte (octet) received in order + 1.
+
+SEQ = the number of the FIRST data byte in this segment.
+ACK = the number of the NEXT byte expected by the receiver.
+```
+
+```
+Sender (A)                                      Receiver (B)
+    │                                                 │
+    │  1. ───── SEQ=1000 (100 octets : 1000-1099) ───►│
+    │                                                 │ Received : 1000-1099
+    │   ◄─────────────── ACK=1100 ──────────────────  │
+    │                                                 │
+    │  2. ───── SEQ=1100 (200 octets : 1100-1299) ───►│ (slow, delayed)
+    │                                                 │
+    │  3. ───── SEQ=1300 (150 octets : 1300-1449) ───►│ (comes first)
+    │                                                 │
+    │                                                 │ ⚠️ GAP ! I'm waitting 1100,
+    │                                                 │    but I received 1300.
+    │                                                 │ I put 1300-1449 into BUFFER.
+    │   ◄─────────────── ACK=1100 ──────────────────  │
+    │                                                 │
+    │  2. ───── SEQ=1100 (200 octets) ───────────────►│ (is finally here)
+    │                                                 │
+    │                                                 │ ✅ GAP FILLED !
+    │                                                 │ I've got : 1100-1299 + buffer 1300-1449
+    │                                                 │ Everything is continuous 1449.
+    │                                                 │
+    │   ◄─────────────── ACK=1450 ──────────────────  │ (next octet expected)
+    │                                                 │
 ```
 
 **dataofs**
