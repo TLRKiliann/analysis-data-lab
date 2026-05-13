@@ -38,23 +38,8 @@ python3 -m venv lab
 
 source lab/bin/activate
 
-# Install scapy
-pip install scapy
-
-# Create requirements.txt
-touch requirements.txt
-
-# add scapy into requirements.txt
-pip freeze > requirements.txt
-
 # Update all versions
 pip install -r requirements.txt
-
-# Selective update
-pip install --upgrade scapy
-
-# Or update to the latest compatible versions
-pip install --upgrade -r requirements.txt
 
 # Enter into the lab folder
 cd lab
