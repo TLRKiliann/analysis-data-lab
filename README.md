@@ -17,8 +17,6 @@
   - [tcpdump CMD](#tcpdump-cmd)
   - [Hexadecimal to Octets](#hexadecimal-to-octets)
   - [IP fields](#ip-fields)
-  - [Number (decimal)    Number (hexa)   Protocol        Usage](#number-decimal----number-hexa---protocol--------usage)
-- [0x40 = 64 in decimal = bit DF](#0x40--64-in-decimal--bit-df)
   - [TCP fields](#tcp-fields)
   - [Summary of IP and TCP](#summary-of-ip-and-tcp)
   - [ARP](#arp)
@@ -427,6 +425,7 @@ Routers take different paths on the outbound and return legs. This is very commo
 The protocol field indicates which higher-level protocol is contained in the IP packet data:
 ICMP, TCP, UDP, ... (encapsulated protocol)
 
+```
 Number (decimal)    Number (hexa)   Protocol        Usage
 --------------------------------------------------------------------------------------
 1                   0x01            ICMP            Ping, traceroute, erreurs réseau
@@ -440,6 +439,7 @@ Number (decimal)    Number (hexa)   Protocol        Usage
 443                                                 HTTPS
 89                  0x59            OSPF            Routage interne
 132                 0x84            SCTP            Téléphonie (alternative à TCP)
+```
 
 - Proto=6  (TCP) + port 80  → HTTP
 - Proto=6  (TCP) + port 443 → HTTPS
@@ -456,8 +456,10 @@ Number (decimal)    Number (hexa)   Protocol        Usage
 
 [Bit 0 (Reserved)] [Bit 1 (DF)] [Bit 2 (MF)]
 
-# 0x40 = 64 in decimal = bit DF
+```
+0x40 = 64 in decimal = bit DF
 0x40 = "DF" => flags=0x40 or flags="DF"
+```
 
 ---
 
