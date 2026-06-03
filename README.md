@@ -86,28 +86,28 @@ sudo tcpdump -i en1 -c 1 -v -X 'icmp[icmptype] != icmp-echo'
 
 `$ sudo tcpdump -i eth0 -nn -c 1 -v -X -G 5 port 80`
 
--i = interface
+`-i` = interface
 
--A = ASCII
+`-A` = ASCII
 
--X = hexadecimal & ASCII
+`-X` = hexadecimal & ASCII
 
--c = nb de paquet
+`-c` = nb de paquet
 
--G = temps d'attente en sec 
+`-G` = temps d'attente en sec 
 
--nn = A single (n) will not resolve hostnames. A double (nn) will not resolve hostnames or ports. 
+`-nn` = A single (n) will not resolve hostnames. A double (nn) will not resolve hostnames or ports. 
 This is handy for not only viewing the IP / port numbers but also when capturing a large amount 
 of data, as the name resolution will slow
 
--v : Verbose, using (-v) or (-vv) increases the amount of detail shown in the output, often showing 
+`-v` : Verbose, using (-v) or (-vv) increases the amount of detail shown in the output, often showing 
 more protocol specific information.
 
-$ sudo tcpdump -i eth0 -n icmp -w capture.pcap
+`$ sudo tcpdump -i eth0 -n icmp -w capture.pcap`
 
--w = write
+`-w` = write
 
-capture.pcap = to capture packet
+`capture.pcap` = to capture packet
 
 ---
 
@@ -391,10 +391,14 @@ Blocks of 8 octets => Offset max: 8191 => Position max: 65528 octets (8191 × 8)
 Hops => 64 (Linux/macOS), 128 (Windows), 255 (routeurs)
 
 - ping -c 3 8.8.8.8
+
 ttl=117 => 128-117 = 11 hops (routers)
+
 (255-117 = 138 hops is not possible, max 128 or 64 routers)
 
 - traceroute 8.8.8.8
+
+```
 traceroute to 8.8.8.8 (8.8.8.8), 64 hops max, 40 byte packets
  1  localregion (x.x.x.x)  6.322 ms  4.278 ms  4.220 ms
  2  cybl-ch-zrh-pln-001.cyberlink.ch (212.55.222.27)  12.204 ms  12.610 ms  12.237 ms
@@ -405,6 +409,7 @@ traceroute to 8.8.8.8 (8.8.8.8), 64 hops max, 40 byte packets
  6  * * swissix.google.com (91.206.52.74)  15.580 ms
  7  * * *
  8  dns.google (8.8.8.8)  25.399 ms  14.157 ms  13.531 ms
+```
 
 Your PC → Google : 8 hops (traceroute)
 Google → Your PC : 11 hops (ping)
