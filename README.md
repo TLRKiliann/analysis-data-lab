@@ -17,6 +17,8 @@
   - [tcpdump CMD](#tcpdump-cmd)
   - [Hexadecimal to Octets](#hexadecimal-to-octets)
   - [IP fields](#ip-fields)
+  - [Number (decimal)    Number (hexa)   Protocol        Usage](#number-decimal----number-hexa---protocol--------usage)
+- [0x40 = 64 in decimal = bit DF](#0x40--64-in-decimal--bit-df)
   - [TCP fields](#tcp-fields)
   - [Summary of IP and TCP](#summary-of-ip-and-tcp)
   - [ARP](#arp)
@@ -83,8 +85,8 @@ sudo tcpdump -i en1 -c 1 -v -X 'icmp[icmptype] != icmp-echo'
 
 [https://hackertarget.com/tcpdump-examples/](https://hackertarget.com/tcpdump-examples/)
 
-```
-$ sudo tcpdump -i eth0 -nn -c 1 -v -X -G 5 port 80
+
+`$ sudo tcpdump -i eth0 -nn -c 1 -v -X -G 5 port 80`
 
 -i = interface
 
@@ -108,7 +110,8 @@ $ sudo tcpdump -i eth0 -n icmp -w capture.pcap
 -w = write
 
 capture.pcap = to capture packet
-```
+
+---
 
 [:arrow_up: Up](#-analysis-data-lab)
 
@@ -247,6 +250,8 @@ Champs obligatoires (20 octets) :
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
+---
+
 **Version**
 
 ```
@@ -256,17 +261,19 @@ Champs obligatoires (20 octets) :
 IPv4 or IPv6
 ```
 
+---
+
 **ihl**
 
 ```
 # ihl (Internet Header Length)
 ihl + options = 32 bits = 4 octets
 IHL = 5 → 5 mots × 4 octets/mot = 20 octets
+```
 
 (look at file fields-overview.py)
 Minimale value : 5 (5 mots × 4 octets = 20 octets)    <= without options
 Maximale value : 15 (15 mots × 4 octets = 60 octets)  <= with all options
-```
 
 :anger: ihl = 5 mots of 4 octets or 32 bits => 20 octets or 160 bits
 
@@ -276,6 +283,8 @@ data_start = ihl * 4  # 20 octets since the beginning
 ihl = 8  # 32 octets (header + options)
 data_start = ihl * 4  # 32 octets since the beginning
 ```
+
+---
 
 **tos**
 
@@ -320,31 +329,36 @@ video = IP(tos=0x88, dst="zoom.us") / UDP(...)        # DSCP 34 = AF41
 backup = IP(tos=0x20, dst="backup.server") / TCP(...)  # DSCP 8 = CS1
 ```
 
+---
+
 **len**
 
 ```
 # len (Total Length)
 16 bits (0-65535) but minimum 20 octets
-
+```
 Knowing where the package ends
 
 len > MTU (Maximum Transmission Unit)
 
 pkt = IP(len=10)  # Impossible (minimum 20 octets)
-```
 
 :warning: Force it manually (not recommended) :warning:
+
+---
 
 **id**
 
 ```
 # id (Identification)
 16 bits (0 to 65535)
+```
 
 The “Identification” field (ID) is used to group fragments from the same packet. When a packet is fragmented, all of its fragments are assigned the same identification number.
 
 - Security issues => Idle scan, ID prediction, fragmentation attacks
-```
+
+---
 
 **frag**
 
@@ -352,7 +366,7 @@ The “Identification” field (ID) is used to group fragments from the same pac
 # frag (Fragment Offset)
 13 bits 
 8 octets x 8 = 64 bits
-
+```
 Reconstruct the original order of the fragments = ID (same ID for all fragments) + MF (flag)
 
 Fragment Offset is a key field for IP fragmentation, a mechanism that allows a packet that is too large to pass through a network to be split into smaller pieces.
@@ -366,13 +380,15 @@ Fragment Offset: 185 (1480 ÷ 8 = 185)
 ...
 
 Blocks of 8 octets => Offset max: 8191 => Position max: 65528 octets (8191 × 8)
-```
+
+---
 
 **ttl**
 
 ```
 # ttl (time to live)
 8 bits (0-255)
+```
 
 Hops => 64 (Linux/macOS), 128 (Windows), 255 (routeurs)
 
@@ -398,13 +414,15 @@ Google → Your PC : 11 hops (ping)
 Routers take different paths on the outbound and return legs. This is very common on the Internet.
 
 255 remains the maximum possible value (since it is 8 bits), but it is rarely used on the public Internet.
-```
+
+---
 
 **proto**
 
 ```
 # proto (Protocol)
 8 bits
+```
 
 The protocol field indicates which higher-level protocol is contained in the IP packet data:
 ICMP, TCP, UDP, ... (encapsulated protocol)
@@ -426,24 +444,29 @@ Number (decimal)    Number (hexa)   Protocol        Usage
 - Proto=6  (TCP) + port 80  → HTTP
 - Proto=6  (TCP) + port 443 → HTTPS
 - Proto=17 (UDP) + port 53  → DNS
-```
+
+---
 
 **flags**
 
 ```
 # flags
 1 bit
+```
+
 [Bit 0 (Reserved)] [Bit 1 (DF)] [Bit 2 (MF)]
 
 # 0x40 = 64 in decimal = bit DF
 0x40 = "DF" => flags=0x40 or flags="DF"
-```
+
+---
 
 **chksum**
 
 ```
 # chksum
 16 bits
+```
 
 The IP checksum uses a 16-bit one's-complement sum, applied only to the IP header (typically 20 bytes without options, or more if options are present).
 
@@ -455,7 +478,7 @@ Each router checks this, since the TTL changes and the DST verify this too.
 
 IPv6 haven't got checksum !
 
-```
+---
 
 **options**
 
@@ -500,16 +523,20 @@ IP options are becoming obsolete because:
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
+---
+
 **sport**
 
 ```
 # sport (source port)
 16 bits → valeurs de 0 à 65535
+```
 
 The source port identifies the sending application on the client machine. It is the local "socket" number that allows the operating system to determine which application the connection belongs to on the sending side.
 
 The operating system assigns a different source port for each outgoing connection.
-```
+
+---
 
 **dport**
 
@@ -531,6 +558,7 @@ Ports 0–1023 are typically server-side destination ports
 # seq (Sequence number)
 32 bits
 Number of FIRST byte (octet).
+```
 
 Without it, TCP would not be reliable !
 
@@ -548,7 +576,8 @@ For security reasons (to prevent prediction), TCP selects a random initial seque
 
 SEQ = the number of the FIRST data byte in this segment.
 ACK = the number of the NEXT byte expected by the receiver.
-```
+
+---
 
 **ack**
 
@@ -587,6 +616,8 @@ Sender (A)                                      Receiver (B)
     │                                                 │
 ```
 
+---
+
 **dataofs**
 
 ```
@@ -600,19 +631,25 @@ Data Offset = 5 → 5 × 32 bits = 20 octets → pas d'options, en-tête fixe se
 Data Offset = 8 → 8 × 32 bits = 32 octets → 12 octets d'options (car 20 octets d'en-tête fixe + 12 octets d'options). Les données commencent après ces 32 octets.
 ```
 
+---
+
 **reserved**
 
 ```
 # reserved
 4 bits
+```
 
 always equal to 0
 
+```
 Bits      Nom         Usage
 Bits      4-7         Reserved	Doit être 0 (non utilisé)
 Bit       8           ECE	ECN-Echo (RFC 3168)
 Bit       9           CWR	Congestion Window Reduced (RFC 3168)
 ```
+
+---
 
 **flags**
 
@@ -639,11 +676,14 @@ Hexa	Binaire     Flags	      Nom commun
 0x39	00111001	  URG+PSH+FIN (rare)
 ```
 
+---
+
 **window**
 
 ```
 # window
 16 bts (0 à 65 535 octets)
+```
 
 This value can be increased up to 1 GB (scaling factor defined during the 3-way handshake).
 
@@ -667,14 +707,17 @@ What happens when Window = 0 ?
     The transmitter resumes sending
 
 The congestion window (cwnd) is independent and managed by the sender. It is used to prevent the network itself from becoming overloaded.
-```
+
+---
 
 **chksum**
 
 ```
 # chksum
 16 bits
+```
 
+```
 TCP header + data => Comprehensive end-to-end verification
 
 Feature                     IP Checksum (IPv4)	                  TCP Checksum (IPv6)
@@ -684,6 +727,8 @@ Recalculated at each hop    ✅ Yes (because TTL changes)          ❌ No (only 
 In IPv6                     Does not exist                        Still exists
 Mandatory                   Yes (IPv4)                            Yes
 ```
+
+---
 
 **urgptr**
 
@@ -698,15 +743,15 @@ Rlogin: Emergency signal
 Metaphor: Like a medical emergency that jumps the queue
 ```
 
-**options**
+---
 
-```
-# options
+**options**
 
 Normally, the TCP header is 20 bytes long (without options). The "Data Offset" field indicates the total size (a multiple of 4 bytes). If you see 32 bytes, that means there are 12 bytes of options.
 
 TCP options allow adding advanced features:
 
+```
 Option                          Number      Purpose
 -------------------------------------------------------------------------------------------------------------------------
 MSS (Maximum Segment Size)      2           Negotiate the maximum segment size (avoids fragmentation)
@@ -753,8 +798,9 @@ Data IP (TCP + HTTP): 1480 octets
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-
 [:arrow_up: Up](#-analysis-data-lab)
+
+---
 
 ## ARP
 
@@ -788,8 +834,9 @@ hwdst   str     MAC destination             "ff:ff:ff:ff:ff:ff" (broadcast pour 
 pdst    str     IP destination              "192.168.1.1"
 ```
 
-
 [:arrow_up: Up](#-analysis-data-lab)
+
+---
 
 ## Display results
 
@@ -798,7 +845,7 @@ pdst    str     IP destination              "192.168.1.1"
 
 pkt.show()  Au moment où vous construisez le paquet (valeurs "brutes" que vous avez mises)
 
-pktshow2() Après que Scapy a calculé tous les champs automatiques (checksums, longueurs, etc.)
+pkt.show2() Après que Scapy a calculé tous les champs automatiques (checksums, longueurs, etc.)
 
 pkt.summary()
 ```
@@ -873,8 +920,9 @@ srp()     Layer 2 (Ethernet)  Trames Ethernet   ✅ Yes (several)        Ether()
 srp1()    Layer 2 (Ethernet)  Trames Ethernet   ✅ Yes (only one)       Ether()/IP()/ICMP()
 ```
 
-
 [:arrow_up: Up](#-analysis-data-lab)
+
+---
 
 ## ICMP
 
@@ -1023,6 +1071,5 @@ pkt = pkt / b"Hello World"
 # Afficher les champs
 pkt.show()
 ```
-
 
 [:arrow_up: Up](#links)
